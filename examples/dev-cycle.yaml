@@ -11,7 +11,9 @@ jobs:
     steps:
       - name: plan
         run: |
-          claude -p "$(cat examples/prompts/planner.md)" | tee $WORKSPACE/current-ticket-id
+          claude -p "WORKSPACE=$WORKSPACE
+
+          $(cat examples/prompts/planner.md)"
 
   implementer:
     needs: [planner]
@@ -34,7 +36,7 @@ jobs:
         run: |
           TICKET=$(cat $WORKSPACE/current-ticket-id | tr -d '[:space:]')
           if [ "$TICKET" != "done" ]; then
-            PROMPT=$(cat prompts/reviewer.md)
+            PROMPT=$(cat examples/prompts/reviewer.md)
             claude -p "対象チケット: .tickets/${TICKET}.md
 
             ${PROMPT}"

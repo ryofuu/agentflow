@@ -31,4 +31,6 @@ ticket-format:
     created_by: planner, created_at, updated_at
   sections: "## Description", "## Acceptance Criteria"
 
-output: チケットID（例: TICKET-001）または done を1行だけ。それ以外は出力しない
+output: |
+  チケットID（例: TICKET-001）または done を $WORKSPACE/current-ticket-id に書き出す。
+  echo "TICKET-001" > $WORKSPACE/current-ticket-id のようにファイルに1行だけ書く。

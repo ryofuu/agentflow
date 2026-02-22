@@ -55,41 +55,16 @@ export async function executeStep(
     printStepStart(context.jobName, context.stepName);
   }
 
-  if (step.output || context.parallel) {
-    // Use PTY so child process sees a real TTY (enables streaming from claude etc.)
-    const exitCode = await runWithPty(step, context, env, cwd);
+  // Always use PTY so child process sees a real TTY (enables streaming from claude etc.)
+  const exitCode = await runWithPty(step, context, env, cwd);
 
-    const duration = (Date.now() - startTime) / 1000;
-    if (!context.parallel) {
-      printStepEnd(context.jobName, context.stepName, duration);
-    }
-
-    if (exitCode !== 0) {
-      throw new StepError(context.jobName, context.stepName, exitCode);
-    }
-  } else {
-    // No output capture, no parallel — inherit stdout directly
-    const proc = Bun.spawn(["sh", "-c", step.run], {
-      env,
-      cwd,
-      stdout: "inherit",
-      stderr: "inherit",
-    });
-
-    let timer: Timer | undefined;
-    if (step.timeout) {
-      timer = setTimeout(() => proc.kill(), step.timeout * 1000);
-    }
-
-    const exitCode = await proc.exited;
-    if (timer) clearTimeout(timer);
-
-    const duration = (Date.now() - startTime) / 1000;
+  const duration = (Date.now() - startTime) / 1000;
+  if (!context.parallel) {
     printStepEnd(context.jobName, context.stepName, duration);
+  }
 
-    if (exitCode !== 0) {
-      throw new StepError(context.jobName, context.stepName, exitCode);
-    }
+  if (exitCode !== 0) {
+    throw new StepError(context.jobName, context.stepName, exitCode);
   }
 }
 
