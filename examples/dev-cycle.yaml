@@ -1,0 +1,69 @@
+name: develop-feature
+workspace: .agentflow
+
+on:
+  loop:
+    max: 15
+    until: grep -q '^done$' $WORKSPACE/current-ticket-id 2>/dev/null
+
+jobs:
+  planner:
+    steps:
+      - name: plan
+        run: |
+          claude -p "You are the Planner for this project.
+
+          Read REQUIREMENT.md for the project requirements.
+          Read all ticket files in .tickets/*.md (if any exist).
+
+          Your responsibilities:
+          1. If no tickets exist, break down the requirements into tickets.
+             Create each ticket as .tickets/TICKET-{NNN}.md with full frontmatter.
+             Include Description and Acceptance Criteria sections.
+          2. If a ticket has status 'review-rejected': pick it (highest priority).
+          3. If a ticket has status 'dev-done': pick it (needs review).
+          4. If a ticket has status 'ready': pick it.
+          5. If all tickets are 'closed' but requirements are not fully met:
+             create additional tickets and pick one.
+          6. If all work is complete: output 'done'.
+
+          Output ONLY the ticket ID (e.g. TICKET-001) or 'done'. Nothing else."
+        output: current-ticket-id
+
+  implementer:
+    needs: [planner]
+    steps:
+      - name: implement
+        run: |
+          TICKET=$(cat $WORKSPACE/current-ticket-id | tr -d '[:space:]')
+          if [ "$TICKET" != "done" ]; then
+            codex \
+              --prompt "Read .tickets/${TICKET}.md directly.
+            Implement the task per the Acceptance Criteria.
+            If there is a '## Review Feedback' section, address every issue listed.
+            Write tests.
+            Update the ticket frontmatter: status: dev-done, updated_at to now." \
+              --approval-policy on-failure
+          fi
+
+  reviewer:
+    needs: [implementer]
+    steps:
+      - name: review
+        run: |
+          TICKET=$(cat $WORKSPACE/current-ticket-id | tr -d '[:space:]')
+          if [ "$TICKET" != "done" ]; then
+            claude -p "Read .tickets/${TICKET}.md directly.
+
+            Review the git diff against the Acceptance Criteria in the ticket.
+
+            - If APPROVED (no issues found):
+              Update status to 'closed', update updated_at.
+              Remove '## Review Feedback' section if it exists.
+            - If NEEDS_CHANGES (any issues found):
+              Update status to 'review-rejected', update updated_at.
+              Add or replace '## Review Feedback' section with your findings.
+              Use [OK], [ISSUE], [SUGGESTION] tags.
+
+            Output a one-line summary of your decision."
+          fi

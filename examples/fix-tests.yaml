@@ -1,0 +1,34 @@
+name: fix-tests
+workspace: .agentflow
+
+on:
+  loop:
+    max: 5
+    until: npm test
+
+jobs:
+  capture:
+    steps:
+      - run: npm test 2>&1 || true
+        output: test-results.txt
+
+  analyze:
+    needs: [capture]
+    steps:
+      - run: |
+          claude -p "Analyze $WORKSPACE/test-results.txt.
+          Identify root cause of each failure."
+        output: analysis.md
+
+  fix:
+    needs: [analyze]
+    steps:
+      - run: |
+          codex --prompt "Fix the issues in $WORKSPACE/analysis.md.
+          Make minimal changes."
+
+  verify:
+    needs: [fix]
+    steps:
+      - run: npm test 2>&1 || true
+        output: test-results.txt

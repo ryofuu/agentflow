@@ -1,0 +1,20 @@
+name: ci-pipeline
+on: run
+
+jobs:
+  lint:
+    steps:
+      - run: echo "Linting..."
+
+  typecheck:
+    steps:
+      - run: echo "Type checking..."
+
+  test:
+    steps:
+      - run: echo "Running tests..."
+
+  build:
+    needs: [lint, typecheck, test]
+    steps:
+      - run: echo "Building..."
