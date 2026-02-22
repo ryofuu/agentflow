@@ -1,0 +1,29 @@
+name: countdown
+workspace: .agentflow
+
+on:
+  loop:
+    max: 10
+    until: "[ \"$(cat $WORKSPACE/count.txt 2>/dev/null)\" = \"0\" ]"
+
+jobs:
+  decrement:
+    steps:
+      - name: tick
+        run: |
+          CURRENT=$(cat $WORKSPACE/count.txt 2>/dev/null || echo 5)
+          NEXT=$((CURRENT - 1))
+          echo "countdown: $CURRENT -> $NEXT"
+          echo $NEXT > $WORKSPACE/count.txt
+
+  report:
+    needs: [decrement]
+    steps:
+      - name: status
+        run: |
+          COUNT=$(cat $WORKSPACE/count.txt)
+          if [ "$COUNT" = "0" ]; then
+            echo "Liftoff!"
+          else
+            echo "Remaining: $COUNT"
+          fi
