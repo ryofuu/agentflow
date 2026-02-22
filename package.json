@@ -20,6 +20,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "bun-pty": "^0.4.8",
     "yaml": "^2.8.2"
   }
 }

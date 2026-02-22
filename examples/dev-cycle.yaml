@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: plan
         run: |
-          script -q /dev/null claude -p "$(cat examples/prompts/planner.md)" | tee $WORKSPACE/current-ticket-id
+          claude -p "$(cat examples/prompts/planner.md)" | tee $WORKSPACE/current-ticket-id
 
   implementer:
     needs: [planner]

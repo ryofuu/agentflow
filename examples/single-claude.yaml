@@ -1,0 +1,11 @@
+name: single-claude
+workspace: .agentflow
+
+on: run
+
+jobs:
+  ask:
+    steps:
+      - name: ask-claude
+        run: claude -p "3つ好きな寿司ネタを教えて。簡潔に。"
+        output: answer.txt

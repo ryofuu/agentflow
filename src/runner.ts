@@ -1,5 +1,6 @@
 import { resolve, join, dirname } from "node:path";
 import { mkdirSync, openSync, writeSync, closeSync } from "node:fs";
+import { spawn as ptySpawn } from "bun-pty";
 import type { StepConfig } from "./parser.ts";
 import { printStepStart, printStepEnd, prefixOutput } from "./formatter.ts";
 
@@ -55,53 +56,8 @@ export async function executeStep(
   }
 
   if (step.output || context.parallel) {
-    // Pipe stdout so we can tee or prefix
-    const proc = Bun.spawn(["sh", "-c", step.run], {
-      env,
-      cwd,
-      stdout: "pipe",
-      stderr: "inherit",
-    });
-
-    let outputFd: number | undefined;
-    if (step.output) {
-      const outputPath = join(context.workspace, step.output);
-      mkdirSync(dirname(outputPath), { recursive: true });
-      outputFd = openSync(outputPath, "w");
-    }
-
-    const reader = proc.stdout.getReader();
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        if (value) {
-          if (context.parallel) {
-            const prefixed = prefixOutput(context.jobName, value);
-            process.stdout.write(prefixed);
-          } else {
-            process.stdout.write(value);
-          }
-          if (outputFd !== undefined) {
-            writeSync(outputFd, value);
-          }
-        }
-      }
-    } finally {
-      reader.releaseLock();
-      if (outputFd !== undefined) {
-        closeSync(outputFd);
-      }
-    }
-
-    // Timeout
-    let timer: Timer | undefined;
-    if (step.timeout) {
-      timer = setTimeout(() => proc.kill(), step.timeout * 1000);
-    }
-
-    const exitCode = await proc.exited;
-    if (timer) clearTimeout(timer);
+    // Use PTY so child process sees a real TTY (enables streaming from claude etc.)
+    const exitCode = await runWithPty(step, context, env, cwd);
 
     const duration = (Date.now() - startTime) / 1000;
     if (!context.parallel) {
@@ -112,7 +68,7 @@ export async function executeStep(
       throw new StepError(context.jobName, context.stepName, exitCode);
     }
   } else {
-    // No output capture, no parallel - inherit stdout directly
+    // No output capture, no parallel — inherit stdout directly
     const proc = Bun.spawn(["sh", "-c", step.run], {
       env,
       cwd,
@@ -135,4 +91,62 @@ export async function executeStep(
       throw new StepError(context.jobName, context.stepName, exitCode);
     }
   }
+}
+
+// --- PTY-based execution (tee + parallel prefix with real TTY) ---
+
+function runWithPty(
+  step: StepConfig,
+  context: StepContext,
+  env: Record<string, string>,
+  cwd: string,
+): Promise<number> {
+  return new Promise((resolvePromise) => {
+    const cols = process.stdout.columns || 120;
+    const rows = process.stdout.rows || 40;
+
+    const pty = ptySpawn("sh", ["-c", step.run], {
+      name: "xterm-256color",
+      cols,
+      rows,
+      cwd,
+      env,
+    });
+
+    let outputFd: number | undefined;
+    if (step.output) {
+      const outputPath = join(context.workspace, step.output);
+      mkdirSync(dirname(outputPath), { recursive: true });
+      outputFd = openSync(outputPath, "w");
+    }
+
+    // Timeout
+    let timer: Timer | undefined;
+    if (step.timeout) {
+      timer = setTimeout(() => pty.kill(), step.timeout * 1000);
+    }
+
+    pty.onData((data: string) => {
+      const bytes = new TextEncoder().encode(data);
+
+      if (context.parallel) {
+        const prefixed = prefixOutput(context.jobName, bytes);
+        process.stdout.write(prefixed);
+      } else {
+        process.stdout.write(bytes);
+      }
+
+      if (outputFd !== undefined) {
+        writeSync(outputFd, bytes);
+      }
+    });
+
+    pty.onExit(({ exitCode }) => {
+      if (timer) clearTimeout(timer);
+      if (outputFd !== undefined) {
+        closeSync(outputFd);
+      }
+      resolvePromise(exitCode);
+    });
+  });
 }
