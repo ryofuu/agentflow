@@ -1,0 +1,9 @@
+name: hello
+on: run
+
+jobs:
+  greet:
+    steps:
+      - run: echo "Hello from AgentFlow!"
+      - run: echo "WORKSPACE=$WORKSPACE"
+      - run: echo "AGENTFLOW_HOME=$AGENTFLOW_HOME"

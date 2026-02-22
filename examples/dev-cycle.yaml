@@ -3,7 +3,7 @@ workspace: .agentflow
 
 on:
   loop:
-    max: 3
+    max: 15
     until: grep -q '^done$' $WORKSPACE/current-ticket-id 2>/dev/null
 
 jobs:
@@ -13,7 +13,7 @@ jobs:
         run: |
           claude -p "WORKSPACE=$WORKSPACE
 
-          $(cat examples/prompts/planner.md)"
+          $(cat $AGENTFLOW_HOME/agents/planner.md)"
 
   implementer:
     needs: [planner]
@@ -22,11 +22,12 @@ jobs:
         run: |
           TICKET=$(cat $WORKSPACE/current-ticket-id | tr -d '[:space:]')
           if [ "$TICKET" != "done" ]; then
-            PROMPT=$(cat examples/prompts/implementer.md)
+            PROMPT=$(cat $AGENTFLOW_HOME/agents/implementer.md)
             claude \
-              -p "対象チケット: .tickets/${TICKET}.md
+              -p "WORKSPACE=$WORKSPACE
+          対象チケット: $WORKSPACE/tickets/${TICKET}.md
 
-              ${PROMPT}"
+          ${PROMPT}"
           fi
 
   reviewer:
@@ -36,8 +37,9 @@ jobs:
         run: |
           TICKET=$(cat $WORKSPACE/current-ticket-id | tr -d '[:space:]')
           if [ "$TICKET" != "done" ]; then
-            PROMPT=$(cat examples/prompts/reviewer.md)
-            claude -p "対象チケット: .tickets/${TICKET}.md
+            PROMPT=$(cat $AGENTFLOW_HOME/agents/reviewer.md)
+            claude -p "WORKSPACE=$WORKSPACE
+          対象チケット: $WORKSPACE/tickets/${TICKET}.md
 
-            ${PROMPT}"
+          ${PROMPT}"
           fi

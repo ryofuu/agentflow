@@ -1,6 +1,11 @@
+#!/usr/bin/env bun
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { loadConfig } from "./parser.ts";
 import { buildPlan } from "./scheduler.ts";
 import { execute, type ExecuteOptions } from "./engine.ts";
+
+const AGENTFLOW_HOME = join(process.env.HOME ?? "", ".agentflow");
 
 // --- CLI Args ---
 
@@ -64,13 +69,27 @@ function parseArgs(args: string[]): CliArgs {
   return { command: "run", workflowPath, dryRun, workspaceOverride, maxOverride, verbose };
 }
 
+function resolveWorkflowPath(input: string): string {
+  // 1. As-is (relative or absolute)
+  if (existsSync(input)) return input;
+  // 2. ~/.agentflow/workflows/{input}
+  const inHome = join(AGENTFLOW_HOME, "workflows", input);
+  if (existsSync(inHome)) return inHome;
+  // 3. ~/.agentflow/workflows/{input}.yaml
+  const withExt = `${inHome}.yaml`;
+  if (existsSync(withExt)) return withExt;
+
+  // Fall through — let loadConfig report the error
+  return input;
+}
+
 // --- Main ---
 
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
 
   try {
-    const config = await loadConfig(args.workflowPath);
+    const config = await loadConfig(resolveWorkflowPath(args.workflowPath));
     const plan = buildPlan(config);
     const options: ExecuteOptions = {
       dryRun: args.dryRun,

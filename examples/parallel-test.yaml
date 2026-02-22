@@ -1,0 +1,20 @@
+name: parallel-test
+on: run
+
+jobs:
+  fast:
+    steps:
+      - run: echo "fast done"
+
+  medium:
+    steps:
+      - run: sleep 0.5 && echo "medium done"
+
+  slow:
+    steps:
+      - run: sleep 1 && echo "slow done"
+
+  collect:
+    needs: [fast, medium, slow]
+    steps:
+      - run: echo "all 3 jobs finished"

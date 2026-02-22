@@ -38,6 +38,7 @@ export async function executeStep(
       ),
     ),
     WORKSPACE: context.workspace,
+    AGENTFLOW_HOME: join(process.env.HOME ?? "", ".agentflow"),
     JOB_NAME: context.jobName,
     STEP_NAME: context.stepName,
     ITERATION: String(context.iteration),
