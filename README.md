@@ -1,12 +1,8 @@
-<p align="center">
-  <h1 align="center">AgentFlow</h1>
-  <p align="center">
-    <strong>Orchestrate AI agents like CI/CD pipelines.</strong>
-  </p>
-  <p align="center">
-    Declarative YAML workflows &bull; DAG-based parallel execution &bull; Real-time PTY streaming
-  </p>
-</p>
+# AgentFlow
+
+**Orchestrate AI agents like CI/CD pipelines.**
+
+Declarative YAML workflows, DAG-based parallel execution, and real-time PTY streaming. Define your agents, their dependencies, and exit conditions in a single YAML file — AgentFlow handles the rest.
 
 ---
 
