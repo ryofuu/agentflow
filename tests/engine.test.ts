@@ -1,9 +1,9 @@
-import { describe, expect, test, beforeEach, afterEach } from "bun:test";
-import { execute } from "../src/engine.ts";
-import { buildPlan } from "../src/scheduler.ts";
-import type { WorkflowConfig } from "../src/parser.ts";
+import { afterEach, beforeEach, describe, expect, test } from "bun:test";
+import { existsSync, mkdirSync, readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
-import { mkdirSync, rmSync, readFileSync, existsSync } from "node:fs";
+import { execute } from "../src/engine.ts";
+import type { WorkflowConfig } from "../src/parser.ts";
+import { buildPlan } from "../src/scheduler.ts";
 
 const tmpDir = join(import.meta.dir, ".tmp-engine");
 

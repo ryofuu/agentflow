@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { loadConfig } from "../src/parser.ts";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { loadConfig } from "../src/parser.ts";
 
 const tmpDir = join(import.meta.dir, ".tmp-parser");
 

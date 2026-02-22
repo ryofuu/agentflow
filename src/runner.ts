@@ -1,8 +1,8 @@
-import { resolve, join, dirname } from "node:path";
-import { mkdirSync, openSync, writeSync, closeSync } from "node:fs";
+import { closeSync, mkdirSync, openSync, writeSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
 import { spawn as ptySpawn } from "bun-pty";
+import { prefixOutput, printStepEnd, printStepStart } from "./formatter.ts";
 import type { StepConfig } from "./parser.ts";
-import { printStepStart, printStepEnd, prefixOutput } from "./formatter.ts";
 
 // --- Type Definitions ---
 

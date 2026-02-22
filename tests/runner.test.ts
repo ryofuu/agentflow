@@ -1,7 +1,7 @@
-import { describe, expect, test, beforeEach, afterEach } from "bun:test";
-import { executeStep, StepError } from "../src/runner.ts";
+import { afterEach, beforeEach, describe, expect, test } from "bun:test";
+import { mkdirSync, readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
-import { mkdirSync, rmSync, readFileSync } from "node:fs";
+import { executeStep, StepError } from "../src/runner.ts";
 
 const tmpDir = join(import.meta.dir, ".tmp-runner");
 

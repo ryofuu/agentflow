@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { buildPlan } from "../src/scheduler.ts";
 import type { WorkflowConfig } from "../src/parser.ts";
+import { buildPlan } from "../src/scheduler.ts";
 
 function makeConfig(
   jobs: WorkflowConfig["jobs"],

@@ -16,8 +16,11 @@
 		"enabled": true,
 		"rules": {
 			"recommended": true,
+			"correctness": {
+				"noUnusedImports": "error"
+			},
 			"suspicious": {
-				"noExplicitAny": "warn"
+				"noExplicitAny": "error"
 			},
 			"style": {
 				"noNonNullAssertion": "error"

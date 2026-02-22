@@ -1,6 +1,18 @@
 import { mkdirSync } from "node:fs";
 import { resolve } from "node:path";
+import {
+	printDryRun,
+	printError,
+	printHeader,
+	printIterationHeader,
+	printJobSkipped,
+	printParallelHeader,
+	printStateChange,
+	printSummary,
+	printUntilResult,
+} from "./formatter.ts";
 import type { WorkflowConfig } from "./parser.ts";
+import { executeStep, type StepContext, StepError } from "./runner.ts";
 import type { ExecutionPlan } from "./scheduler.ts";
 import {
 	initState,
@@ -8,22 +20,6 @@ import {
 	updateJobState,
 	type WorkflowState,
 } from "./state.ts";
-import { executeStep, StepError, type StepContext } from "./runner.ts";
-import {
-	printHeader,
-	printIterationHeader,
-	printJobStart,
-	printJobEnd,
-	printJobSkipped,
-	printStepStart,
-	printStepEnd,
-	printUntilResult,
-	printSummary,
-	printDryRun,
-	printStateChange,
-	printError,
-	printParallelHeader,
-} from "./formatter.ts";
 
 // --- Type Definitions ---
 

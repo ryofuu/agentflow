@@ -1,9 +1,9 @@
 #!/usr/bin/env bun
 import { existsSync } from "node:fs";
 import { join } from "node:path";
+import { type ExecuteOptions, execute } from "./engine.ts";
 import { loadConfig } from "./parser.ts";
 import { buildPlan } from "./scheduler.ts";
-import { execute, type ExecuteOptions } from "./engine.ts";
 
 const AGENTFLOW_HOME = join(process.env.HOME ?? "", ".agentflow");
 
