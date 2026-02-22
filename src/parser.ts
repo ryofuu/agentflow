@@ -90,8 +90,7 @@ function validate(config: WorkflowConfig): void {
 			}
 		}
 
-		for (let i = 0; i < job.steps.length; i++) {
-			const step = job.steps[i]!;
+		for (const [i, step] of job.steps.entries()) {
 			if (!step.run) {
 				throw new Error(`Job ${id}, step ${i}: run is required`);
 			}

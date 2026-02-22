@@ -35,8 +35,8 @@ jobs:
       expect(config.on).toBe("run");
       expect(config.workspace).toBe(".agentflow");
       expect(Object.keys(config.jobs)).toEqual(["hello"]);
-      expect(config.jobs.hello!.steps).toHaveLength(1);
-      expect(config.jobs.hello!.steps[0]!.run).toBe("echo hello");
+      expect(config.jobs.hello.steps).toHaveLength(1);
+      expect(config.jobs.hello.steps[0].run).toBe("echo hello");
     } finally {
       cleanup();
     }
@@ -94,13 +94,13 @@ jobs:
     );
     try {
       const config = await loadConfig(path);
-      expect(config.jobs.lint!.env).toEqual({ NODE_ENV: "test" });
-      expect(config.jobs.lint!.steps[0]!.name).toBe("lint-step");
-      expect(config.jobs.lint!.steps[0]!.timeout).toBe(60);
-      expect(config.jobs.build!.needs).toEqual(["lint"]);
-      expect(config.jobs.build!.if).toBe('[ -f package.json ]');
-      expect(config.jobs.build!.steps[0]!.output).toBe("build-log.txt");
-      expect(config.jobs.build!.steps[0]!["working-directory"]).toBe("./app");
+      expect(config.jobs.lint.env).toEqual({ NODE_ENV: "test" });
+      expect(config.jobs.lint.steps[0].name).toBe("lint-step");
+      expect(config.jobs.lint.steps[0].timeout).toBe(60);
+      expect(config.jobs.build.needs).toEqual(["lint"]);
+      expect(config.jobs.build.if).toBe('[ -f package.json ]');
+      expect(config.jobs.build.steps[0].output).toBe("build-log.txt");
+      expect(config.jobs.build.steps[0]["working-directory"]).toBe("./app");
     } finally {
       cleanup();
     }

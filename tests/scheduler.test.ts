@@ -32,7 +32,7 @@ describe("scheduler", () => {
       }),
     );
     expect(plan.levels).toHaveLength(1);
-    expect(plan.levels[0]!.jobs.sort()).toEqual(["a", "b", "c"]);
+    expect(plan.levels[0].jobs.sort()).toEqual(["a", "b", "c"]);
   });
 
   test("linear dependency creates sequential levels", () => {
@@ -60,9 +60,9 @@ describe("scheduler", () => {
       }),
     );
     expect(plan.levels).toHaveLength(3);
-    expect(plan.levels[0]!.jobs).toEqual(["a"]);
-    expect(plan.levels[1]!.jobs.sort()).toEqual(["b", "c"]);
-    expect(plan.levels[2]!.jobs).toEqual(["d"]);
+    expect(plan.levels[0].jobs).toEqual(["a"]);
+    expect(plan.levels[1].jobs.sort()).toEqual(["b", "c"]);
+    expect(plan.levels[2].jobs).toEqual(["d"]);
   });
 
   test("mixed independent and dependent jobs", () => {
@@ -78,12 +78,12 @@ describe("scheduler", () => {
       }),
     );
     expect(plan.levels).toHaveLength(2);
-    expect(plan.levels[0]!.jobs.sort()).toEqual([
+    expect(plan.levels[0].jobs.sort()).toEqual([
       "lint",
       "test",
       "typecheck",
     ]);
-    expect(plan.levels[1]!.jobs).toEqual(["build"]);
+    expect(plan.levels[1].jobs).toEqual(["build"]);
   });
 
   test("detects circular dependency", () => {

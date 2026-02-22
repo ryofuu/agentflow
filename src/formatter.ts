@@ -84,8 +84,7 @@ export function printDryRun(plan: ExecutionPlan, config: WorkflowConfig): void {
 
 	// Execution plan
 	console.log("Execution Plan:");
-	for (let i = 0; i < plan.levels.length; i++) {
-		const level = plan.levels[i]!;
+	for (const [i, level] of plan.levels.entries()) {
 		console.log(`  Level ${i + 1}: ${level.jobs.join(", ")}`);
 	}
 	console.log();

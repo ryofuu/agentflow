@@ -23,7 +23,7 @@ export function buildPlan(config: WorkflowConfig): ExecutionPlan {
 	for (const [id, job] of Object.entries(config.jobs)) {
 		if (job.needs) {
 			for (const dep of job.needs) {
-				graph.get(dep)!.push(id);
+				graph.get(dep)?.push(id);
 			}
 		}
 	}
@@ -99,7 +99,7 @@ function topoLevels(
 	for (const [id, job] of Object.entries(config.jobs)) {
 		if (job.needs) {
 			for (const dep of job.needs) {
-				forward.get(dep)!.push(id);
+				forward.get(dep)?.push(id);
 			}
 		}
 	}

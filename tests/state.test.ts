@@ -35,7 +35,7 @@ describe("state", () => {
     });
 
     updateJobState(state, "a", { status: "running" });
-    expect(state.jobs.a!.status).toBe("running");
+    expect(state.jobs.a.status).toBe("running");
 
     updateJobState(state, "a", { status: "completed", exitCode: 0, duration: 2.3 });
     expect(state.jobs.a).toEqual({

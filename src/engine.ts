@@ -127,7 +127,8 @@ export async function execute(
 			const satisfied = await checkUntil(until, workspace, iteration);
 			printUntilResult(satisfied);
 			if (satisfied) {
-				state.history[state.history.length - 1]!.result = "satisfied";
+				const lastEntry = state.history[state.history.length - 1];
+				if (lastEntry) lastEntry.result = "satisfied";
 				earlyExit = true;
 				break;
 			}
@@ -137,7 +138,8 @@ export async function execute(
 
 		// Check max reached
 		if (iteration === max && isLoop) {
-			state.history[state.history.length - 1]!.result = "max_reached";
+			const lastEntry = state.history[state.history.length - 1];
+			if (lastEntry) lastEntry.result = "max_reached";
 		}
 	}
 
@@ -168,7 +170,8 @@ async function runLevel(
 	let hasFailed = false;
 
 	const promises = jobIds.map(async (jobId) => {
-		const job = config.jobs[jobId]!;
+		const job = config.jobs[jobId];
+		if (!job) return;
 
 		// if condition check
 		if (job.if) {
@@ -192,8 +195,7 @@ async function runLevel(
 
 		try {
 			// Run all steps sequentially
-			for (let i = 0; i < job.steps.length; i++) {
-				const step = job.steps[i]!;
+			for (const [i, step] of job.steps.entries()) {
 				const stepName = step.name ?? `step-${i}`;
 
 				if (isParallel) {
