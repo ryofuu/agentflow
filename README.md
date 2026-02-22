@@ -56,11 +56,7 @@ AgentFlow gives you:
 ## Install
 
 ```bash
-git clone https://github.com/yourname/agentflow.git
-cd agentflow && bun install
-
-# Make it available globally
-ln -s "$(pwd)/src/index.ts" ~/.local/bin/agentflow
+bun add -g @ryofuu/agentflow
 ```
 
 > Requires [Bun](https://bun.sh) v1.1+

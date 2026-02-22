@@ -1,26 +1,54 @@
 {
-  "name": "agentflow-v2",
-  "module": "src/index.ts",
-  "type": "module",
-  "private": true,
-  "bin": {
-    "agentflow": "src/index.ts"
-  },
-  "scripts": {
-    "test": "bun test",
-    "typecheck": "bun tsc --noEmit",
-    "lint": "biome check --formatter-enabled=false",
-    "lint:fix": "biome check --fix --formatter-enabled=false"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^2.3.11",
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  },
-  "dependencies": {
-    "bun-pty": "^0.4.8",
-    "yaml": "^2.8.2"
-  }
+	"name": "@ryofuu/agentflow",
+	"author": "ryosuke fujii",
+	"version": "0.1.0",
+	"description": "Declarative workflow engine for orchestrating AI agents. GitHub Actions-like YAML syntax with DAG-based parallel execution and real-time PTY streaming.",
+	"module": "src/index.ts",
+	"type": "module",
+	"bin": {
+		"agentflow": "src/index.ts"
+	},
+	"files": [
+		"src",
+		"examples",
+		"README.md",
+		"LICENSE"
+	],
+	"scripts": {
+		"test": "bun test",
+		"typecheck": "bun tsc --noEmit",
+		"lint": "biome check --formatter-enabled=false",
+		"lint:fix": "biome check --fix --formatter-enabled=false"
+	},
+	"keywords": [
+		"agent",
+		"workflow",
+		"orchestration",
+		"ai",
+		"claude",
+		"codex",
+		"dag",
+		"pipeline",
+		"automation",
+		"bun"
+	],
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ryofuu/agentflow"
+	},
+	"engines": {
+		"bun": ">=1.1.0"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.3.11",
+		"@types/bun": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	},
+	"dependencies": {
+		"bun-pty": "^0.4.8",
+		"yaml": "^2.8.2"
+	}
 }
