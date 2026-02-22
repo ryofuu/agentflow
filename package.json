@@ -1,0 +1,19 @@
+{
+  "name": "agentflow-v2",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "bun test",
+    "typecheck": "bun tsc --noEmit",
+    "lint": "biome lint",
+    "lint:fix": "biome lint --fix"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.11",
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
